@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect } from "react";
+import Image from "next/image";
 
 export default function AuthPage() {
   const { user, loading } = useAuth();
@@ -32,8 +33,19 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Login</CardTitle>
-            <CardDescription>
+            <div className="flex justify-center mb-4">
+              <div className="relative h-16 w-16">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="İşbank Logo" 
+                  fill 
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+            <CardDescription className="text-center">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>

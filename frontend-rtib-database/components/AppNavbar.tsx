@@ -19,6 +19,7 @@ import { usePathname } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useLanguage } from "@/contexts/language-context";
+import Image from "next/image";
 
 export function AppNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +76,15 @@ export function AppNavbar() {
       <div className="container flex h-14 items-center max-w-7xl mx-auto px-4 sm:px-6">
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Globe className="h-6 w-6" />
+            <div className="relative h-8 w-8">
+              <Image 
+                src="/images/logo.png" 
+                alt="İşbank Logo" 
+                fill 
+                className="object-contain"
+                priority
+              />
+            </div>
             <span className="hidden font-bold sm:inline-block">
               RTIB Database
             </span>
@@ -205,7 +214,14 @@ export function AppNavbar() {
                         }`}
                         onClick={closeSheet}
                       >
-                        <Globe className="h-5 w-5" />
+                        <div className="relative h-5 w-5">
+                          <Image 
+                            src="/images/logo.png" 
+                            alt="İşbank Logo" 
+                            fill 
+                            className="object-contain" 
+                          />
+                        </div>
                         About
                       </Link>
                       <Link

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
   Building,
   Home,
@@ -101,7 +102,18 @@ export default function AdminLayout({
       {/* Sidebar */}
       <div className="w-64 border-r bg-card hidden md:block">
         <div className="p-6 border-b">
-          <h1 className="font-bold text-xl">Admin Panel</h1>
+          <div className="flex items-center gap-3">
+            <div className="relative h-8 w-8">
+              <Image 
+                src="/images/logo.png" 
+                alt="İşbank Logo" 
+                fill 
+                className="object-contain"
+                priority
+              />
+            </div>
+            <h1 className="font-bold text-xl">Admin Panel</h1>
+          </div>
         </div>
         <nav className="py-4">
           <ul className="space-y-1 px-2">
@@ -138,7 +150,18 @@ export default function AdminLayout({
       <div className="flex flex-col w-full">
         <div className="border-b p-4 md:hidden">
           <div className="flex items-center justify-between">
-            <h1 className="font-bold">Admin Panel</h1>
+            <div className="flex items-center gap-2">
+              <div className="relative h-6 w-6">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="İşbank Logo" 
+                  fill 
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <h1 className="font-bold">Admin Panel</h1>
+            </div>
             <div className="flex gap-2">
               <Button
                 asChild
