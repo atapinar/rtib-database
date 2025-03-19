@@ -2,15 +2,14 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import {
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   User as FirebaseUser,
-  updateProfile,
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+import Cookies from 'js-cookie';
 
 type User = FirebaseUser & {
   isAdmin?: boolean;
@@ -19,7 +18,6 @@ type User = FirebaseUser & {
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  signup: (email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -27,7 +25,6 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signup: async () => {},
   login: async () => {},
   logout: async () => {},
 });
@@ -54,24 +51,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               isAdmin: userData.isAdmin || false,
             } as User;
             setUser(enhancedUser);
+            
+            // Set the auth cookie when user is authenticated
+            Cookies.set('authToken', firebaseUser.uid, { expires: 7 });
           } else {
-            // If user doc doesn't exist yet, create it
-            await setDoc(userDocRef, {
-              email: firebaseUser.email,
-              isAdmin: false,
-              createdAt: new Date(),
-            });
+            // Use default values if user doc doesn't exist
             setUser({
               ...firebaseUser,
               isAdmin: false,
             } as User);
+            
+            // Set the auth cookie when user is authenticated
+            Cookies.set('authToken', firebaseUser.uid, { expires: 7 });
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
           setUser(firebaseUser as User);
+          
+          // Set the auth cookie when user is authenticated
+          Cookies.set('authToken', firebaseUser.uid, { expires: 7 });
         }
       } else {
         setUser(null);
+        // Remove the auth cookie when user is not authenticated
+        Cookies.remove('authToken');
       }
       setLoading(false);
     });
@@ -79,31 +82,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const signup = async (email: string, password: string) => {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    
-    // Create user document in Firestore
-    await setDoc(doc(db, "users", userCredential.user.uid), {
-      email: email,
-      isAdmin: false,
-      createdAt: new Date(),
-    });
-  };
-
   const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    // Cookie is set in the auth state change listener
+    Cookies.set('authToken', userCredential.user.uid, { expires: 7 });
   };
 
   const logout = async () => {
     await signOut(auth);
+    // Cookie is removed in the auth state change listener
+    Cookies.remove('authToken');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

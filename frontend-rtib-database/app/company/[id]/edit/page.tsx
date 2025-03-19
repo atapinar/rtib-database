@@ -253,13 +253,9 @@ export default function EditCompanyPage({ params }: PageProps) {
                 />
               </div>
 
-              <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.back()}
-                >
-                  Cancel
+              <div className="flex justify-end gap-4 mt-6">
+                <Button variant="outline" asChild>
+                  <Link href={`/company/${company.id}`}>Cancel</Link>
                 </Button>
                 <Button type="submit" disabled={saving}>
                   {saving ? "Saving..." : "Save Changes"}

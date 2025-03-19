@@ -52,10 +52,25 @@ export const getDocument = async <T>(collectionName: string, documentId: string)
 // Update a document
 export const updateDocument = async <T extends DocumentData>(collectionName: string, documentId: string, data: Partial<T>): Promise<void> => {
   try {
+    // Remove any undefined values that might cause Firestore errors
+    const cleanData = Object.fromEntries(
+      Object.entries(data as any).filter(([_, v]) => v !== undefined && v !== null)
+    );
+    
     const docRef = doc(db, collectionName, documentId);
-    await updateDoc(docRef, data as DocumentData);
+    
+    // Ensure dates are properly serialized
+    const processedData = Object.entries(cleanData).reduce((acc, [key, value]) => {
+      // If value is a Date object, ensure it's properly handled for Firestore
+      if (value instanceof Date) {
+        return { ...acc, [key]: value };
+      }
+      return { ...acc, [key]: value };
+    }, {});
+    
+    await updateDoc(docRef, processedData as DocumentData);
   } catch (error) {
-    console.error("Error updating document:", error);
+    console.error(`Error updating document in ${collectionName}:`, error);
     throw error;
   }
 };

@@ -71,179 +71,212 @@ export function AppNavbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64">
-              <SheetHeader className="border-b pb-4">
-                <SheetTitle>RTIB Database</SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-4 py-4">
-                <Link
-                  href="/"
-                  className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
-                    pathname === "/"
-                      ? "font-semibold text-foreground"
-                      : "text-foreground/70"
-                  }`}
-                  onClick={closeSheet}
-                >
-                  <Home className="h-5 w-5" />
-                  Home
-                </Link>
-                
-                {user?.isAdmin && (
-                  <Link
-                    href="/admin"
-                    className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
-                      pathname === "/admin"
-                        ? "font-semibold text-foreground"
-                        : "text-foreground/70"
-                    }`}
-                    onClick={closeSheet}
-                  >
-                    <ShieldCheck className="h-5 w-5" />
-                    Admin Panel
-                  </Link>
-                )}
-                
-                {user ? (
-                  <>
-                    <Link
-                      href="/profile"
-                      className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
-                        pathname === "/profile"
-                          ? "font-semibold text-foreground"
-                          : "text-foreground/70"
-                      }`}
-                      onClick={closeSheet}
-                    >
-                      <UserIcon className="h-5 w-5" />
-                      My Profile
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 text-base text-left transition-colors hover:text-foreground/80 text-foreground/70"
-                    >
-                      <LogOut className="h-5 w-5" />
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <Link
-                    href="/auth"
-                    className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
-                      pathname === "/auth"
-                        ? "font-semibold text-foreground"
-                        : "text-foreground/70"
-                    }`}
-                    onClick={closeSheet}
-                  >
-                    <UserIcon className="h-5 w-5" />
-                    Sign In
-                  </Link>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
-
-          <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="mr-4 flex">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <Globe className="h-6 w-6" />
+            <span className="hidden font-bold sm:inline-block">
+              RTIB Database
+            </span>
+          </Link>
+        </div>
+        
+        {/* Show navigation only for authenticated users */}
+        {user && (
+          <nav className="flex-1 hidden md:flex items-center space-x-6 text-sm font-medium">
             <Link
               href="/"
-              className="hidden md:block font-bold text-xl text-foreground"
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === "/" ? "text-foreground" : "text-foreground/60"
+              }`}
             >
-              RTIB Database
+              Companies
             </Link>
-            
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/"
-                    className={`flex items-center justify-center p-2 rounded-md transition-colors hover:bg-accent ${
-                      pathname === "/"
-                        ? "bg-accent text-foreground"
-                        : "text-foreground/70"
-                    }`}
-                    aria-label="Home"
-                  >
-                    <Home className="h-5 w-5" />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Home</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            
+            <Link
+              href="/about"
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === "/about" ? "text-foreground" : "text-foreground/60"
+              }`}
+            >
+              About
+            </Link>
+            <Link
+              href="/contact"
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === "/contact" ? "text-foreground" : "text-foreground/60"
+              }`}
+            >
+              Contact
+            </Link>
             {user?.isAdmin && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href="/admin"
-                      className={`flex items-center justify-center p-2 rounded-md transition-colors hover:bg-accent ${
-                        pathname === "/admin"
-                          ? "bg-accent text-foreground"
-                          : "text-foreground/70"
-                      }`}
-                      aria-label="Admin Panel"
-                    >
-                      <ShieldCheck className="h-5 w-5" />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Admin Panel</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Link
+                href="/admin"
+                className={`flex items-center gap-1 transition-colors hover:text-foreground/80 ${
+                  pathname.startsWith("/admin")
+                    ? "text-foreground"
+                    : "text-foreground/60"
+                }`}
+              >
+                <ShieldCheck className="h-4 w-4" />
+                Admin
+              </Link>
             )}
-          </div>
-        </div>
+          </nav>
+        )}
 
-        <div className="flex items-center gap-3">
-          {/* Language Switcher */}
-          <DropdownMenu>
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <div className="flex-1 sm:flex-initial sm:grow-0">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                      <Globe className="h-5 w-5" />
-                      <span className="sr-only">Change language</span>
-                    </Button>
-                  </DropdownMenuTrigger>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="px-2"
+                        size="icon"
+                      >
+                        <span className="mx-1">{language.toUpperCase()}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Change language</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {languages.map((lang) => (
+                        <DropdownMenuItem
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.code as "en" | "tr" | "ru")}
+                          className="cursor-pointer"
+                        >
+                          {lang.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Change language</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Select language</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {languages.map((lang) => (
-                <DropdownMenuItem
-                  key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code as "en" | "tr" | "ru")}
-                  className="flex items-center justify-between cursor-pointer"
+          </div>
+
+          <nav className="flex items-center space-x-1">
+            <ThemeSwitcher />
+
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-10 w-10 px-0 md:hidden"
+                  size="icon"
                 >
-                  {lang.name}
-                  {language === lang.code && <span className="ml-2">✓</span>}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* Theme Switcher */}
-          <ThemeSwitcher />
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="pr-0">
+                <SheetHeader className="px-4">
+                  <SheetTitle>Navigation</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-4 px-4 py-6">
+                  {/* Show navigation links for authenticated users only */}
+                  {user && (
+                    <>
+                      <Link
+                        href="/"
+                        className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
+                          pathname === "/"
+                            ? "font-semibold text-foreground"
+                            : "text-foreground/70"
+                        }`}
+                        onClick={closeSheet}
+                      >
+                        <Home className="h-5 w-5" />
+                        Companies
+                      </Link>
+                      <Link
+                        href="/about"
+                        className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
+                          pathname === "/about"
+                            ? "font-semibold text-foreground"
+                            : "text-foreground/70"
+                        }`}
+                        onClick={closeSheet}
+                      >
+                        <Globe className="h-5 w-5" />
+                        About
+                      </Link>
+                      <Link
+                        href="/contact"
+                        className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
+                          pathname === "/contact"
+                            ? "font-semibold text-foreground"
+                            : "text-foreground/70"
+                        }`}
+                        onClick={closeSheet}
+                      >
+                        <ShieldCheck className="h-5 w-5" />
+                        Contact
+                      </Link>
+                      {user?.isAdmin && (
+                        <Link
+                          href="/admin"
+                          className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
+                            pathname.startsWith("/admin")
+                              ? "font-semibold text-foreground"
+                              : "text-foreground/70"
+                          }`}
+                          onClick={closeSheet}
+                        >
+                          <ShieldCheck className="h-5 w-5" />
+                          Admin
+                        </Link>
+                      )}
+                    </>
+                  )}
+                
+                  {user ? (
+                    <>
+                      <Link
+                        href="/profile"
+                        className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
+                          pathname === "/profile"
+                            ? "font-semibold text-foreground"
+                            : "text-foreground/70"
+                        }`}
+                        onClick={closeSheet}
+                      >
+                        <UserIcon className="h-5 w-5" />
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 text-base text-left transition-colors hover:text-foreground/80 text-foreground/70"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/auth"
+                      className={`flex items-center gap-2 text-base transition-colors hover:text-foreground/80 ${
+                        pathname === "/auth"
+                          ? "font-semibold text-foreground"
+                          : "text-foreground/70"
+                      }`}
+                      onClick={closeSheet}
+                    >
+                      <UserIcon className="h-5 w-5" />
+                      Sign In
+                    </Link>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </nav>
           
           {user ? (
             <div className="flex items-center gap-4">

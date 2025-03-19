@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -12,7 +12,9 @@ import {
   Settings,
   Database,
   LogOut,
+  Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AdminLayout({
   children,
@@ -22,28 +24,26 @@ export default function AdminLayout({
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isAdminChecked, setIsAdminChecked] = useState(false);
 
   useEffect(() => {
-    if (!loading && (!user || !user.isAdmin)) {
-      router.push("/");
+    // Only redirect after auth state is fully loaded
+    if (!loading) {
+      if (!user) {
+        toast.error("You must be logged in to access the admin area");
+        router.push("/auth");
+        return;
+      }
+      
+      if (!user.isAdmin) {
+        toast.error("You don't have admin privileges");
+        router.push("/");
+        return;
+      }
+      
+      setIsAdminChecked(true);
     }
   }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen bg-background">
-        <div className="w-64 h-screen animate-pulse bg-gray-100 border-r"></div>
-        <div className="flex-1 p-8">
-          <div className="h-8 w-64 animate-pulse rounded bg-gray-200 mb-6"></div>
-          <div className="h-[calc(100vh-120px)] animate-pulse rounded bg-gray-100"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || !user.isAdmin) {
-    return null; // Will redirect in the useEffect
-  }
 
   const handleLogout = async () => {
     try {
@@ -51,8 +51,26 @@ export default function AdminLayout({
       router.push("/");
     } catch (error) {
       console.error("Failed to logout:", error);
+      toast.error("Failed to logout. Please try again.");
     }
   };
+
+  // If still loading auth state or checking admin status, show loading state
+  if (loading || !isAdminChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not admin, don't render anything (will be redirected in useEffect)
+  if (!user || !user.isAdmin) {
+    return null;
+  }
 
   const navItems = [
     { href: "/admin", label: "Dashboard", icon: <Home className="h-5 w-5" /> },

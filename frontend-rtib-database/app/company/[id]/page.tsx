@@ -70,8 +70,7 @@ interface CompanyData {
   updatedAt?: any;
 }
 
-export default function CompanyDetailsPage() {
-  const params = useParams<{ id: string }>();
+export default function CompanyPage({ params }: { params: { id: string } }) {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();

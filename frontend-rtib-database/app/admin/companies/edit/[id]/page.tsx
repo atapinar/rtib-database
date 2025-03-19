@@ -134,6 +134,10 @@ export default function AdminEditCompanyPage({ params }: PageProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Prevent submission if the form is already being processed
+    if (saving) return;
+    
     if (!user || !user.isAdmin) {
       toast.error("You must be an admin to edit a company");
       return;
@@ -202,16 +206,23 @@ export default function AdminEditCompanyPage({ params }: PageProps) {
         }
       }
       
+      // Convert string number fields to actual numbers
+      const yearEstablished = formData.get("yearEstablished") as string;
+      const numEmployees = formData.get("numEmployees") as string;
+      const totalInvestment = formData.get("totalInvestment") as string;
+      const annualRevenue = formData.get("annualRevenue") as string;
+      const importVolume = formData.get("importVolume") as string;
+      const exportVolume = formData.get("exportVolume") as string;
+      
       const updatedCompany = {
-        ...company,
         // Basic Info
         companyName: formData.get("companyName") as string,
         name: formData.get("companyName") as string, // Keep for backward compatibility
         businessActivity: formData.get("businessActivity") as string,
         industry: formData.get("businessActivity") as string, // Keep for backward compatibility
         companyType: formData.get("companyType") as string,
-        yearEstablished: formData.get("yearEstablished") as string,
-        foundedYear: parseInt(formData.get("yearEstablished") as string) || undefined,
+        yearEstablished: yearEstablished ? yearEstablished : null,
+        foundedYear: yearEstablished ? parseInt(yearEstablished) : null,
         logoUrl,
         
         // Location
@@ -241,24 +252,34 @@ export default function AdminEditCompanyPage({ params }: PageProps) {
         subsidiaries: subsidiaries,
         
         // Financial Info
-        numEmployees: parseInt(formData.get("numEmployees") as string) || undefined,
-        employeeCount: parseInt(formData.get("numEmployees") as string) || undefined, // Keep for backward compatibility
-        totalInvestment: parseFloat(formData.get("totalInvestment") as string) || undefined,
-        annualRevenue: parseFloat(formData.get("annualRevenue") as string) || undefined,
-        importVolume: parseFloat(formData.get("importVolume") as string) || undefined,
-        exportVolume: parseFloat(formData.get("exportVolume") as string) || undefined,
+        numEmployees: numEmployees ? parseInt(numEmployees) : null,
+        employeeCount: numEmployees ? parseInt(numEmployees) : null, // Keep for backward compatibility
+        totalInvestment: totalInvestment ? parseFloat(totalInvestment) : null,
+        annualRevenue: annualRevenue ? parseFloat(annualRevenue) : null,
+        importVolume: importVolume ? parseFloat(importVolume) : null,
+        exportVolume: exportVolume ? parseFloat(exportVolume) : null,
         
         // System fields
         updatedAt: new Date(),
       };
 
       console.log("Updating company with data:", updatedCompany);
-      await updateDocument("companies", params.id, updatedCompany);
+      
+      // First strip any undefined values to avoid Firestore errors
+      const cleanedCompany = Object.fromEntries(
+        Object.entries(updatedCompany).filter(([_, v]) => v !== undefined)
+      );
+      
+      await updateDocument("companies", params.id, cleanedCompany);
       toast.success("Company updated successfully");
-      router.push("/admin/companies");
-    } catch (error) {
+      
+      // Short delay to ensure the toast is seen
+      setTimeout(() => {
+        router.push("/admin/companies");
+      }, 1000);
+    } catch (error: any) {
       console.error("Error updating company:", error);
-      toast.error("Failed to update company");
+      toast.error(`Failed to update company: ${error.message || "Unknown error"}`);
     } finally {
       setSaving(false);
     }

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { AddCompanyForm } from "@/components/company/AddCompanyForm";
+import AddCompanyForm from "@/components/company/AddCompanyForm";
 
 export default function AddCompanyPage() {
   const { user, loading } = useAuth();
