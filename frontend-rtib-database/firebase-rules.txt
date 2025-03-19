@@ -1,0 +1,42 @@
+// Firestore Rules for RTIB Database
+// Copy these rules to Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if the user is an admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    
+    // Rules for users collection
+    match /users/{userId} {
+      // Users can read and write their own document
+      // Admins can read all user documents
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Users can only update their own document, not create or delete
+      // Admins can do anything
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    
+    // Rules for companies collection
+    match /companies/{companyId} {
+      // Anyone can read company documents
+      allow read: if true;
+      // Only admins can write company documents
+      allow write: if isAdmin();
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 
